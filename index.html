@@ -3,14 +3,13 @@
 
 <head>
 	<meta charset="utf-8" />
-	<title>Lumine</title>
+	<title>Misell</title>
 	<link rel="preconnect" href="https://fonts.gstatic.com" />
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap" rel="stylesheet" />
 	<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap" rel="stylesheet">
 	<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
 	<link href="spinner.css" rel="stylesheet" />
-	<link rel="shortcut icon"
-		href="https://cdn.discordapp.com/avatars/853150224473522197/20f9fa825ca5e95c787b52deabef50ea.png?size=256">
+	<link rel="shortcut icon" href="https://cdn.discordapp.com/avatars/552187437049446400/9367d02078dbf01b00822846d6aee48e.png?size=256">
 	<style>
 		/* font classes to pair with tailwind */
 		.inter {
@@ -39,13 +38,10 @@
 		<div class="mb-10 mt-44">
 			<div class="flex flex-col items-center">
 				<div class="flex flex-row items-center">
-					<img src="https://cdn.discordapp.com/avatars/853150224473522197/20f9fa825ca5e95c787b52deabef50ea.png?size=256"
-						width="64" class="rounded-full" />
+					<img src="https://cdn.discordapp.com/avatars/552187437049446400/9367d02078dbf01b00822846d6aee48e.png?size=256" width="64" class="rounded-full" />
 					<div class="m-5 object-right">
-						<h1 class="text-5xl font-bold">Lumine</h1>
-						<p>
-							See how many servers you've joined on Discord
-						</p>
+						<h1 class="text-5xl font-bold">Misell</h1>
+						<p>See how many servers you've joined on Discord</p>
 					</div>
 				</div>
 				<div data-state="noauth" style="display:none;">
@@ -74,15 +70,15 @@
 						</h1>
 						<h1 class="flex justify-center items-center pt-1">
 							<span class="scp text-2xl font-bold pl-2 pr-2" id="count_partner">0</span>
-							<img class="emoji" src="/assets/badges/partner.png"></img>
+							<img class="emoji" src="https://raw.githubusercontent.com/ShiroKazane/Lumine/main/assets/badges/partner.png"></img>
 						</h1>
 						<h1 class="flex justify-center items-center pt-1">
 							<span class="scp text-2xl font-bold pl-2 pr-2" id="count_verify">00</span>
-							<img class="emoji" src="/assets/badges/verified.png"></img>
+							<img class="emoji" src="https://raw.githubusercontent.com/ShiroKazane/Lumine/main/assets/badges/verified.png"></img>
 						</h1>
 						<h1 class="flex justify-center items-center pt-1">
 							<span class="scp text-2xl font-bold pl-2 pr-2" id="count_owner">00</span>
-							<img class="emoji" src="/assets/badges/owner.png"></img>
+							<img class="emoji" src="https://raw.githubusercontent.com/ShiroKazane/Lumine/main/assets/badges/owner.png"></img>
 						</h1>
 					</div>
 					<div class="w-full flex flex-row flex-wrap justify-center">
@@ -116,7 +112,7 @@
 		const hash = {}
 		const cfg = {
 			api_host: "https://discord.com/api/v9",
-			application_id: "853150224473522197"
+			application_id: "552187437049446400"
 		}
 
 		// populate hash string
@@ -141,7 +137,7 @@
 		// store inbound access tokens and change url
 		if (hash.access_token) {
 			localStorage.access_token = hash.access_token;
-			window.history.replaceState({authenticated: true}, 'Lumine', '/');
+			window.history.replaceState({authenticated: true}, 'Misell', '/Lumine/');
 		}
 
 		// the magic
