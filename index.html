@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title>Lumine</title>
+	<link rel="preconnect" href="https://fonts.gstatic.com" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap" rel="stylesheet">
+	<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+	<link href="spinner.css" rel="stylesheet" />
+	<link rel="shortcut icon"
+		href="https://cdn.discordapp.com/avatars/853150224473522197/20f9fa825ca5e95c787b52deabef50ea.png?size=256">
+	<style>
+		/* font classes to pair with tailwind */
+		.inter {
+			font-family: "Inter";
+		}
+
+		.scp {
+			font-family: "Source Code Pro";
+		}
+
+		/* brand gradient */
+		body { background: linear-gradient(90deg, #8548f5, #fa93ff); }
+
+		/* https://github.com/twitter/twemoji#inline-styles */
+		img.emoji {
+			height: 1em;
+			width: 1em;
+			margin: 0 .05em 0 .1em;
+			vertical-align: -0.1em;
+		}
+	</style>
+</head>
+
+<body class="inter text-white white bg-gradient-to-r from-gray-900 to-gray-900">
+	<main>
+		<div class="mb-10 mt-44">
+			<div class="flex flex-col items-center">
+				<div class="flex flex-row items-center">
+					<img src="https://cdn.discordapp.com/avatars/853150224473522197/20f9fa825ca5e95c787b52deabef50ea.png?size=256"
+						width="64" class="rounded-full" />
+					<div class="m-5 object-right">
+						<h1 class="text-5xl font-bold">Lumine</h1>
+						<p>
+							See how many servers you've joined on Discord
+						</p>
+					</div>
+				</div>
+				<div data-state="noauth" style="display:none;">
+					<button id="btn-login"
+						class="leading-4 bg-white pt-2 pb-2 pl-3 pr-3 rounded-lg text-black transition-transform transform hover:scale-110">
+						<box-icon type="logo" name="discord-alt" color="black" class="align-middle relative"></box-icon>
+						Login with Discord
+					</button>
+				</div>
+				<div data-state="auth" style="display:none;" class="">
+					<div class="justify-center flex flex-row space-x-4">
+						<div class="usr flex flex-row items-center space-x-1">
+							<img src="https://cdn.discordapp.com/avatars/{{id}}/{{avatar}}.png" width="25px" height="25px"
+								class="rounded-full" />
+							<span class="font-bold">{{username}}#{{discriminator}}</span>
+						</div>
+						<button id="btn-logout"
+							class="leading-4 bg-white pt-2 pb-2 pl-3 pr-3 rounded-lg text-black transition-transform transform hover:scale-110">
+							Logout
+						</button>
+					</div>
+					<div class="pb-12 flex flex-row justify-center space-x-8">
+						<h1 class="flex justify-center items-center pt-1">
+							<span class="scp text-2xl font-bold pl-2 pr-2" id="count">0</span>
+							servers
+						</h1>
+						<h1 class="flex justify-center items-center pt-1">
+							<span class="scp text-2xl font-bold pl-2 pr-2" id="count_partner">0</span>
+							<img class="emoji" src="/assets/badges/partner.png"></img>
+						</h1>
+						<h1 class="flex justify-center items-center pt-1">
+							<span class="scp text-2xl font-bold pl-2 pr-2" id="count_verify">00</span>
+							<img class="emoji" src="/assets/badges/verified.png"></img>
+						</h1>
+						<h1 class="flex justify-center items-center pt-1">
+							<span class="scp text-2xl font-bold pl-2 pr-2" id="count_owner">00</span>
+							<img class="emoji" src="/assets/badges/owner.png"></img>
+						</h1>
+					</div>
+					<div class="w-full flex flex-row flex-wrap justify-center">
+						<button id="btn-skipanim"
+							class="font-bold items-center flex flex-row leading-4 pl-3 pr-3 rounded-lg text-white transition-transform transform hover:scale-105">
+							Skip Animation
+							<box-icon name='skip-next' color="white" size="md"></box-icon>
+						</button>
+					</div>
+					<div id="servers" class="flex flex-row flex-wrap justify-center">
+					</div>
+				</div>
+				<div data-state="err" style="display:none;">
+					<h1 class="font-lg font-bold">An error occured!</h1>
+					<p>We've automatically cleared your login, try refreshing to login.</p>
+				</div>
+				<div data-state="load" class="spinner">
+					<div class="cube1"></div>
+					<div class="cube2"></div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+	<script src="https://unpkg.com/boxicons@2.0.9/dist/boxicons.js"></script>
+	<script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"></script>
+	<script src="utils.js"></script>
+	<script>
+		const hash = {}
+		const cfg = {
+			api_host: "https://discord.com/api/v9",
+			application_id: "853150224473522197"
+		}
+
+		// populate hash string
+		try {
+			window.location.hash.split("#")[1].split("&")
+				.forEach((h) => {hash[h.split("=")[0]] = h.split("=")[1]})
+		} catch {} // hash is already an empty object, no need to cleanup
+
+		// button listeners
+		document.getElementById("btn-login")
+			.addEventListener('click', (e) => {
+				const oauth_url = `https://discord.com/api/oauth2/authorize?response_type=token&client_id=${cfg.application_id}&scope=identify+guilds`
+				window.location.href = oauth_url
+			})
+
+		document.getElementById("btn-logout")
+			.addEventListener('click', (e) => {
+				delete localStorage.access_token;
+				location.reload()
+			})
+
+		// store inbound access tokens and change url
+		if (hash.access_token) {
+			localStorage.access_token = hash.access_token;
+			window.history.replaceState({authenticated: true}, 'Lumine', '/');
+		}
+
+		// the magic
+		if (localStorage.access_token) {
+			// show spinner
+			document.querySelector("div[data-state='load']").style.display = "block"
+			document.querySelector("div[data-state='noauth']").style.display = "none"
+
+			// get userinfo from discord api
+			fetch(`${cfg.api_host}/users/@me`, {
+				headers: {"Authorization": `Bearer ${localStorage.access_token}`}
+			})
+				.then(res => {
+					// if unauthorized
+					if (res.status == 401) {
+						delete localStorage.access_token;
+						document.querySelector("div[data-state='load']").style.display = "none"
+						document.querySelector("div[data-state='noauth']").style.display = "block"
+						return;
+					}
+					return res.json()
+				})
+				.then(async usr => {
+					// check if error
+					if (usr.message) {
+						delete localStorage.access_token;
+						document.querySelector("div[data-state='err']").style.display = "block"
+						return;
+					};
+
+					// replace all templates
+					const els = document.querySelectorAll(".usr")
+					for (let i = 0; i < els.length; i++) {
+						const el = els[i]
+						el.innerHTML = el.innerHTML.replace(/{{(.*?)}}/g, (match, g1) => {
+							return sanitizeHTML(usr[g1]);
+						})
+					}
+
+					// fetch guilds
+					const _guilds = await fetch(`${cfg.api_host}/users/@me/guilds`, {headers: {"Authorization": `Bearer ${localStorage.access_token}`}})
+					const guilds = await _guilds.json();
+
+					// append guilds
+					guilds.forEach(g => {
+						const icon = (g.icon) ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=1024` : `https://cdn.discordapp.com/embed/avatars/0.png`
+						document.getElementById("servers").innerHTML += `
+          <div 
+          class="server text-white bg-black xl:w-3/12 lg:w-2/6 w-4/6 h-16 m-4 mb-8 rounded-lg filter drop-shadow-lg p-4 bg-center bg-cover" 
+          style="background-image:linear-gradient( rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8) ), url(${icon})"
+          >
+            <div class="flex items-center h-full w-full space-x-4">
+              <img class="rounded-full transition-transform transform hover:scale-105" width="85px" src="${icon}">
+              <div>
+                <div class="inline-flex justify-center items-center space-x-1">
+                  ${(g.features.includes("PARTNERED")) ? `<img class="emoji" src="/assets/badges/partner.png"></img>` : ""}
+                  ${(g.features.includes("VERIFIED")) ? `<img class="emoji" src="/assets/badges/verified.png"></img>` : ""}
+                  ${(g.owner) ? `<img class="emoji" src="/assets/badges/owner.png"></img>` : ""}
+                  <h1 class="font-bold text-lg lg:text-xl">
+                    ${twemoji.parse(sanitizeHTML(g.name))}
+                  </h1>
+                </div>
+                <p class="text-xs">Created ${dayjs.unix(convertSnowflake(g.id) / 1000).format("DD-MM-YYYY")}</p>
+              </div>
+            </div>
+          </div>`
+					})
+
+					// show authed page elements
+					document.querySelector("div[data-state='load']").style.display = "none"
+					document.querySelector("div[data-state='auth']").style.display = "block"
+
+					// skip button animation
+					const skipbtn = document.getElementById("btn-skipanim")
+					const removeSkipButton = () => {
+						anime({
+							duration: "300",
+							targets: skipbtn,
+							translateX: [0, 60],
+							opacity: [1, 0],
+							easing: "easeInOutSine",
+							complete: () => {
+								anime({
+									duration: "50",
+									targets: ".server",
+									translateY: [0, 0 - skipbtn.scrollHeight],
+									delay: anime.stagger(50),
+									easing: "spring",
+									complete: (a) => {
+										skipbtn.style.display = "none";
+										a.seek(0)
+									}
+								})
+							}
+						})
+					}
+
+					// animate server elements
+					const serveranim = anime({
+						targets: ".server",
+						duration: 2000,
+						delay: anime.stagger(200),
+						translateY: [40, 0],
+						opacity: [0, 1],
+						autoplay: true,
+						complete: removeSkipButton
+					})
+
+					// stop animation on enter key
+					window.addEventListener('keypress', (e) => {
+						if (e.code == "Enter") serveranim.seek(serveranim.duration)
+					})
+
+					// skip button trigger
+					skipbtn.addEventListener('click', (e) => {serveranim.seek(serveranim.duration)})
+
+					// shake text (the big reveal)
+					let shake = true
+					let shake_intensity = 2
+					function shk() {
+						if (!shake) return;
+						anime({
+							targets: "#count",
+							easing: 'linear',
+							duration: 10,
+							translateX: function () {
+								return anime.random(0 - shake_intensity, shake_intensity);
+							},
+							translateY: function () {
+								return anime.random(0 - shake_intensity, shake_intensity);
+							},
+							complete: shk // loop this function until shake = false
+						});
+					}
+
+					// guild countup text animation
+					const countup = anime({
+						duration: (guilds.length > 25) ? 4000 : 2500,
+						targets: "#count",
+						innerText: [0, guilds.length],
+						round: true, // important!
+						easing: "easeInOutSine",
+						autoplay: false
+					})
+
+					// other counts
+					document.getElementById("count_partner").innerText = guilds.filter(g => g.features.includes("PARTNERED")).length
+					document.getElementById("count_verify").innerText = guilds.filter(g => g.features.includes("VERIFIED")).length
+					document.getElementById("count_owner").innerText = guilds.filter(g => g.owner).length
+
+					shk()
+					countup.complete = () => {shake = false;}// disables shaking
+					countup.play()
+				})
+		} else {
+			// if no auth detected, show button to login
+			document.querySelector("div[data-state='load']").style.display = "none"
+			document.querySelector("div[data-state='noauth']").style.display = "block"
+		}
+
+		twemoji.parse(document.body);
+
+	</script>
+</body>
+
+</html>
