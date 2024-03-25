@@ -4,6 +4,10 @@
 <head>
 	<meta charset="utf-8" />
 	<title>Misell</title>
+	<meta name="description" content="See how many servers you've joined on Discord" />
+	<meta name="theme-color" content="currentColor" />
+	<meta property="og:title" content="Misell" />
+	<meta property="og:description" content="See how many servers you've joined on Discord" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" />
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap" rel="stylesheet" />
 	<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap" rel="stylesheet">
@@ -21,7 +25,16 @@
 		}
 
 		/* brand gradient */
-		body { background: linear-gradient(90deg, #111827, #111827); }
+		body { background: #111827; }
+
+		/* scrollbar */
+		::-webkit-scrollbar { width: 16px; }
+		
+		::-webkit-scrollbar-thumb {
+			background: #FFFFFF;
+			border-radius: 20px;
+			border: 4px solid #111827;
+		}
 
 		/* https://github.com/twitter/twemoji#inline-styles */
 		img.emoji {
