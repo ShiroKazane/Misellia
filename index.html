@@ -3,17 +3,17 @@
 
 <head>
 	<meta charset="utf-8" />
-	<title>Misell</title>
+	<title>Misellia - Server Counter</title>
 	<meta name="description" content="See how many servers you've joined on Discord" />
 	<meta name="theme-color" content="currentColor" />
-	<meta property="og:title" content="Misell" />
+	<meta property="og:title" content="Misellia" />
 	<meta property="og:description" content="See how many servers you've joined on Discord" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" />
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap" rel="stylesheet" />
 	<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap" rel="stylesheet">
 	<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
 	<link href="spinner.css" rel="stylesheet" />
-	<link rel="shortcut icon" href="assets/avatar.png">
+	<link rel="shortcut icon" href="https://cdn.discordapp.com/avatars/552187437049446400/a_2a0711fa37ff26096bd9614b349ca135?size=64">
 	<style>
 		/* font classes to pair with tailwind */
 		.inter {
@@ -51,18 +51,14 @@
 		<div class="mb-10 mt-44">
 			<div class="flex flex-col items-center">
 				<div class="flex flex-row items-center">
-					<img src="assets/avatar.png" width="64" class="rounded-full" />
+					<img src="https://cdn.discordapp.com/avatars/552187437049446400/a_2a0711fa37ff26096bd9614b349ca135?size=64" width="64" class="rounded-full" />
 					<div class="m-5 object-right">
-						<h1 class="text-5xl font-bold">Misell</h1>
+						<h1 class="text-5xl font-bold">Misellia</h1>
 						<p>See how many servers you've joined on Discord</p>
 					</div>
 				</div>
 				<div data-state="noauth" style="display:none;">
-					<button id="btn-login"
-						class="leading-4 bg-white pt-2 pb-2 pl-3 pr-3 rounded-lg text-black transition-transform transform hover:scale-110">
-						<box-icon type="logo" name="discord-alt" color="black" class="align-middle relative"></box-icon>
-						Login with Discord
-					</button>
+					<button id="btn-login" class="leading-4 bg-white pt-2 pb-2 pl-3 pr-3 rounded-lg text-black transition-transform transform hover:scale-110"><box-icon type="logo" name="discord-alt" color="black" class="align-middle relative"></box-icon>Login with Discord</button>
 				</div>
 				<div data-state="auth" style="display:none;" class="">
 					<div class="justify-center flex flex-row space-x-4">
@@ -95,10 +91,7 @@
 						</h1>
 					</div>
 					<div class="w-full flex flex-row flex-wrap justify-center">
-						<button id="btn-skipanim"
-							class="font-bold items-center flex flex-row leading-4 pl-3 pr-3 rounded-lg text-white transition-transform transform hover:scale-105">
-							Skip Animation
-							<box-icon name='skip-next' color="white" size="md"></box-icon>
+						<button id="btn-skipanim" class="font-bold items-center flex flex-row leading-4 pl-3 pr-3 rounded-lg text-white transition-transform transform hover:scale-105">Skip Animation<box-icon name='skip-next' color="white" size="md"></box-icon>
 						</button>
 					</div>
 					<div id="servers" class="flex flex-row flex-wrap justify-center">
@@ -119,13 +112,18 @@
 	<script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 	<script src="https://unpkg.com/boxicons@2.0.9/dist/boxicons.js"></script>
-	<script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"></script>
+	<script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js"></script>
 	<script src="utils.js"></script>
 	<script>
 		const hash = {}
 		const cfg = {
 			api_host: "https://discord.com/api/v9",
 			application_id: "552187437049446400"
+		}
+
+		function direct_login() {
+			const oauth_url = `https://discord.com/api/oauth2/authorize?response_type=token&client_id=${cfg.application_id}&scope=identify+guilds`;
+			window.location.href = oauth_url;
 		}
 
 		// populate hash string
@@ -135,17 +133,15 @@
 		} catch {} // hash is already an empty object, no need to cleanup
 
 		// button listeners
-		document.getElementById("btn-login")
-			.addEventListener('click', (e) => {
-				const oauth_url = `https://discord.com/api/oauth2/authorize?response_type=token&client_id=${cfg.application_id}&scope=identify+guilds`
-				window.location.href = oauth_url
-			})
+		document.getElementById("btn-login").addEventListener('click', (e) => {
+			const oauth_url = `https://discord.com/api/oauth2/authorize?response_type=token&client_id=${cfg.application_id}&scope=identify+guilds`
+			window.location.href = oauth_url
+		})
 
-		document.getElementById("btn-logout")
-			.addEventListener('click', (e) => {
-				delete localStorage.access_token;
-				location.reload()
-			})
+		document.getElementById("btn-logout").addEventListener('click', (e) => {
+			delete localStorage.access_token;
+			location.reload()
+		})
 
 		// store inbound access tokens and change url
 		if (hash.access_token) {
@@ -198,25 +194,22 @@
 					guilds.forEach(g => {
 						const icon = (g.icon) ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=1024` : `https://cdn.discordapp.com/embed/avatars/0.png`
 						document.getElementById("servers").innerHTML += `
-          <div 
-          class="server text-white bg-black xl:w-3/12 lg:w-2/6 w-4/6 h-16 m-4 mb-8 rounded-lg filter drop-shadow-lg p-4 bg-center bg-cover" 
-          style="background-image:linear-gradient( rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8) ), url(${icon})"
-          >
-            <div class="flex items-center h-full w-full space-x-4">
-              <img class="rounded-full transition-transform transform hover:scale-105" width="85px" src="${icon}">
-              <div>
-                <div class="inline-flex justify-center items-center space-x-1">
-                  ${(g.features.includes("PARTNERED")) ? `<img class="emoji" src="/assets/badges/partner.png"></img>` : ""}
-                  ${(g.features.includes("VERIFIED")) ? `<img class="emoji" src="/assets/badges/verified.png"></img>` : ""}
-                  ${(g.owner) ? `<img class="emoji" src="/assets/badges/owner.png"></img>` : ""}
-                  <h1 class="font-bold text-lg lg:text-xl">
-                    ${twemoji.parse(sanitizeHTML(g.name))}
-                  </h1>
-                </div>
-                <p class="text-xs">Created ${dayjs.unix(convertSnowflake(g.id) / 1000).format("DD-MM-YYYY")}</p>
-              </div>
-            </div>
-          </div>`
+						<div class="server text-white bg-black xl:w-3/12 lg:w-2/6 w-4/6 h-16 m-4 mb-8 rounded-lg filter drop-shadow-lg p-4 bg-center bg-cover" style="background-image:linear-gradient( rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8) ), url(${icon})">
+							<div class="flex items-center h-full w-full space-x-4">
+								<img class="rounded-full transition-transform transform hover:scale-105" width="85px" src="${icon}">
+								<div>
+									<div class="inline-flex justify-center items-center space-x-1">
+										${(g.features.includes("PARTNERED")) ? `<img class="emoji" src="/assets/badges/partner.png"></img>` : ""}
+										${(g.features.includes("VERIFIED")) ? `<img class="emoji" src="/assets/badges/verified.png"></img>` : ""}
+										${(g.owner) ? `<img class="emoji" src="/assets/badges/owner.png"></img>` : ""}
+										<h1 class="font-bold text-lg lg:text-xl">
+											${twemoji.parse(sanitizeHTML(g.name))}
+										</h1>
+									</div>
+									<p class="text-xs">Created ${dayjs.unix(convertSnowflake(g.id) / 1000).format("DD-MM-YYYY")}</p>
+								</div>
+							</div>
+						</div>`
 					})
 
 					// show authed page elements
@@ -307,8 +300,9 @@
 				})
 		} else {
 			// if no auth detected, show button to login
-			document.querySelector("div[data-state='load']").style.display = "none"
-			document.querySelector("div[data-state='noauth']").style.display = "block"
+			direct_login();
+			// document.querySelector("div[data-state='load']").style.display = "none"
+			// document.querySelector("div[data-state='noauth']").style.display = "block"
 		}
 
 		twemoji.parse(document.body);
